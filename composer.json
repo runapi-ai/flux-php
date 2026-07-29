@@ -33,7 +33,7 @@
   "homepage": "https://runapi.ai/models/flux",
   "support": {
     "source": "https://github.com/runapi-ai/flux-php",
-    "docs": "https://runapi.ai/docs#sdk-flux",
+    "docs": "https://runapi.ai/docs/resources/sdks",
     "issues": "https://github.com/runapi-ai/flux-php/issues"
   },
   "keywords": [

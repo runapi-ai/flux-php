@@ -10,8 +10,8 @@ errors in PHP.
 
 This README is the PHP package guide for the public `flux-php` split
 repository. For model details, use https://runapi.ai/models/flux; for API
-reference, use https://runapi.ai/docs#flux; for SDK docs, use
-https://runapi.ai/docs#sdk-flux.
+reference, use https://runapi.ai/docs/api/flux/text-to-image; for SDK docs, use
+https://runapi.ai/docs/resources/sdks.
 
 ## Install
 
@@ -75,8 +75,8 @@ or your secret manager; never commit API keys or callback secrets.
 ## Links
 
 - Model page: https://runapi.ai/models/flux
-- SDK docs: https://runapi.ai/docs#sdk-flux
-- Product docs: https://runapi.ai/docs#flux
+- SDK docs: https://runapi.ai/docs/resources/sdks
+- Product docs: https://runapi.ai/docs/api/flux/text-to-image
 - Pricing and rate limits: https://runapi.ai/models/flux/dev
 - Full catalog: https://runapi.ai/models
 - GitHub repository: https://github.com/runapi-ai/flux-php
