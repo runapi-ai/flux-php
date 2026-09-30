@@ -66,10 +66,8 @@ readonly class RemixImage extends TypedConfiguredResource
         return new self(
             $http,
             '/api/v1/flux/remix_image',
-            'flux/remix-image',
             ImageTaskResponse::class,
             CompletedImageTaskResponse::class,
-            [],
             'remix-image',
             ImageTaskResponse::class,
             CompletedImageTaskResponse::class,

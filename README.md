@@ -30,6 +30,14 @@ use RunApi\Flux\FluxClient;
 
 $client = new FluxClient(); // reads RUNAPI_API_KEY
 
+$remixImageTask = $client->remixImage->create([
+    'model' => 'flux-dev',
+    'aspect_ratio' => '1:1',
+    'output_count' => 1,
+    'prompt' => 'Make it golden hour',
+    'source_image_url' => 'https://cdn.runapi.ai/public/samples/image.jpg',
+]);
+
 $task = $client->textToImage->create([
     'model' => 'flux-2-klein',
     'aspect_ratio' => '1:1',
@@ -38,14 +46,6 @@ $task = $client->textToImage->create([
 ]);
 
 $status = $client->textToImage->get($task->id);
-
-$remix = $client->remixImage->create([
-    'model' => 'flux-pro',
-    'prompt' => 'Turn this product shot into a warm editorial photo',
-    'source_image_url' => 'https://cdn.runapi.ai/public/samples/image.jpg',
-    'aspect_ratio' => '1:1',
-    'output_count' => 1,
-]);
 
 $result = $client->textToImage->run([
     'model' => 'flux-2-klein',
@@ -61,6 +61,7 @@ Use `create()` to submit a task and return quickly, `get()` to fetch the latest
 task state, and `run()` when a script should create and poll until completion.
 In web request handlers, prefer `create()` plus webhook or later `get()`
 polling so a worker is not held open.
+
 
 RunAPI-generated file URLs are temporary. Download and store generated files
 in your own durable storage within the retention window; do not treat returned

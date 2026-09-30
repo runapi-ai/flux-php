@@ -64,10 +64,8 @@ readonly class TextToImage extends TypedConfiguredResource
         return new self(
             $http,
             '/api/v1/flux/text_to_image',
-            'flux/text-to-image',
             ImageTaskResponse::class,
             CompletedImageTaskResponse::class,
-            [],
             'text-to-image',
             ImageTaskResponse::class,
             CompletedImageTaskResponse::class,

@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use RunApi\Core\ClientOptions;
 use RunApi\Core\Errors\ValidationException;
+use RunApi\Core\Resources\Pricing;
 use RunApi\Core\Tests\Fixtures\QueueHttpClient;
 use RunApi\Flux\FluxClient;
 use RunApi\Flux\Models\CompletedImageTaskResponse;
@@ -22,13 +23,13 @@ final class FluxClientTest extends TestCase
 
         self::assertInstanceOf(TextToImage::class, $client->textToImage);
         self::assertInstanceOf(RemixImage::class, $client->remixImage);
+        self::assertInstanceOf(Pricing::class, $client->pricing);
     }
 
     public function testCreatePostsCompactedBodyToCorrectPath(): void
     {
         $transport = new QueueHttpClient([
-            new Response(200, [], '{"id":"task_1"}'),
-        ]);
+            new Response(200, [], '{"id":"task_1"}')]);
         $client = new FluxClient(new ClientOptions(apiKey: 'k', httpClient: $transport, maxRetries: 0));
 
         $task = $client->textToImage->create([
@@ -37,8 +38,7 @@ final class FluxClientTest extends TestCase
             'output_count' => 1,
             'prompt' => 'A product render',
             'callback_url' => '',
-            'seed' => null,
-        ]);
+            'seed' => null]);
 
         $body = json_decode((string) $transport->requests[0]->getBody(), true, flags: JSON_THROW_ON_ERROR);
 
@@ -53,16 +53,14 @@ final class FluxClientTest extends TestCase
     {
         $transport = new QueueHttpClient([
             new Response(200, [], '{"id":"task_1"}'),
-            new Response(200, [], '{"id":"task_1","status":"completed","images":[{"url":"https://file.runapi.ai/result"}],"generation_stage":"all_audios_ready","extra_field":"kept"}'),
-        ]);
+            new Response(200, [], '{"id":"task_1","status":"completed","images":[{"url":"https://file.runapi.ai/result"}],"generation_stage":"all_audios_ready","extra_field":"kept","usage":{"cost":0.05}}')]);
         $client = new FluxClient(new ClientOptions(apiKey: 'k', httpClient: $transport, maxRetries: 0));
 
         $result = $client->textToImage->run([
             'model' => 'flux-2-klein',
             'aspect_ratio' => '1:1',
             'output_count' => 1,
-            'prompt' => 'A product render',
-        ]);
+            'prompt' => 'A product render']);
 
         self::assertInstanceOf(CompletedImageTaskResponse::class, $result);
         self::assertSame('https://file.runapi.ai/result', $result->images[0]->url);
@@ -74,8 +72,7 @@ final class FluxClientTest extends TestCase
     {
         $transport = new QueueHttpClient([
             new Response(200, [], '{"id":"task_1"}'),
-            new Response(200, [], '{"id":"task_1","status":"completed"}'),
-        ]);
+            new Response(200, [], '{"id":"task_1","status":"completed","usage":{"cost":0.05}}')]);
         $client = new FluxClient(new ClientOptions(apiKey: 'k', httpClient: $transport, maxRetries: 0));
 
         $this->expectException(ValidationException::class);
@@ -85,31 +82,16 @@ final class FluxClientTest extends TestCase
             'model' => 'flux-2-klein',
             'aspect_ratio' => '1:1',
             'output_count' => 1,
-            'prompt' => 'A product render',
-        ]);
+            'prompt' => 'A product render']);
     }
 
-    public function testRejectsInvalidContractEnum(): void
-    {
-        $client = new FluxClient(new ClientOptions(apiKey: 'k', httpClient: new QueueHttpClient([]), maxRetries: 0));
 
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('aspect_ratio must be one of the allowed values');
-
-        $client->textToImage->create([
-        'model' => 'flux-2-klein',
-        'output_count' => 1,
-        'prompt' => 'A product render',
-        'aspect_ratio' => 'not-valid',
-        ]);
-    }
 
 
     public function testSecondaryResourceUsesItsOwnPath(): void
     {
         $transport = new QueueHttpClient([
-            new Response(200, [], '{"id":"task_2"}'),
-        ]);
+            new Response(200, [], '{"id":"task_2"}')]);
         $client = new FluxClient(new ClientOptions(apiKey: 'k', httpClient: $transport, maxRetries: 0));
 
         $client->remixImage->create([
@@ -117,8 +99,7 @@ final class FluxClientTest extends TestCase
             'aspect_ratio' => '1:1',
             'output_count' => 1,
             'prompt' => 'A product render',
-            'source_image_url' => 'https://cdn.runapi.ai/public/samples/image.jpg',
-        ]);
+            'source_image_url' => 'https://cdn.runapi.ai/public/samples/image.jpg']);
 
         self::assertSame('/api/v1/flux/remix_image', $transport->requests[0]->getUri()->getPath());
     }
